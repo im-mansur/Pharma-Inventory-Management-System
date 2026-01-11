@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
+    <title>Pharmaco ERP - Pure Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        resrel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body class="light-theme">
+
+    <!-- Login Section -->
+    <section id="login-section" class="active">
+        <div class="login-container">
+            <div style="text-align:center; margin-bottom:2rem;">
+                <img src="pharmaco_logo_premium_1768135126952.png"
+                    alt="Pharmaco Logo" style="width: 80px; height: 80px; margin-bottom: 1rem;">
+                <h1 style="color:var(--primary-color); font-weight:800; font-size:2.2rem;">Pharmaco</h1>
+                <p style="color:var(--text-muted)">Elite Pharmacy Management</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" class="input-focus" required placeholder="admin">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" class="input-focus" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="logout-btn-clean"
+                    style="width:100%; background:var(--primary-color); padding:1rem; font-size:1rem;">Login to
+                    Portal</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Main Application Shell -->
+    <main id="app-container" class="hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <div class="pharmaco-logo">
+                    <img src="pharmaco_logo_premium_1768135126952.png"
+                        alt="Pharmaco Logo" class="brand-logo-img">
+                    <span>Pharmaco</span>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li class="nav-item active" data-section="dashboard">
+                        <span class="icon">⊞</span> Dashboard
+                    </li>
+                    <li class="nav-item" data-section="products">
+                        <span class="icon">📦</span> Products
+                    </li>
+                    <li class="nav-item" data-section="suppliers">
+                        <span class="icon">🚛</span> Suppliers
+                    </li>
+                    <li class="nav-item" data-section="orders">
+                        <span class="icon">👜</span> Orders
+                    </li>
+                    <li class="nav-item" data-section="admins">
+                        <span class="icon">👥</span> Manage Admins
+                    </li>
+                    <li class="nav-item" data-section="analytics">
+                        <span class="icon">📊</span> Analytics
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section id="main-content">
+            <header class="top-bar">
+                <div class="user-pill">
+                    <span class="icon">👤</span>
+                    <span id="display-user-name">Huzaifa Basharat</span>
+                </div>
+                <button id="logout-btn" class="logout-btn-clean">Logout</button>
+            </header>
+
+            <div class="content-body">
+                <!-- Each section starts with a <h1> inside its pane to match reference image -->
+
+                <div id="dashboard" class="content-pane active">
+                    <div class="section-hero">
+                        <h1>Dashboard</h1>
+                    </div>
+                    <!-- Metrics etc. will be injected or kept simple -->
+                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:1.5rem; margin-bottom: 2rem;">
+                        <!-- Simple metric boxes -->
+                        <div style="background:white; padding:1.5rem; border-radius:12px; box-shadow:var(--shadow)">
+                            <p style="color:var(--text-muted); font-size:0.9rem;">Total Products</p>
+                            <h2 id="count-total-products" style="margin-top:5px;">0</h2>
+                        </div>
+                        <div style="background:white; padding:1.5rem; border-radius:12px; box-shadow:var(--shadow)">
+                            <p style="color:var(--text-muted); font-size:0.9rem;">Low Stock</p>
+                            <h2 id="count-low-stock" style="margin-top:5px; color:var(--danger)">0</h2>
+                        </div>
+                        <div style="background:white; padding:1.5rem; border-radius:12px; box-shadow:var(--shadow)">
+                            <p style="color:var(--text-muted); font-size:0.9rem;">Today's Orders</p>
+                            <h2 id="count-today-orders" style="margin-top:5px;">0</h2>
+                        </div>
+                        <div style="background:white; padding:1.5rem; border-radius:12px; box-shadow:var(--shadow)">
+                            <p style="color:var(--text-muted); font-size:0.9rem;">Active Suppliers</p>
+                            <h2 id="count-suppliers" style="margin-top:5px;">0</h2>
+                        </div>
+                    </div>
+
+                    <!-- Core Metrics Analytics (2x2 Grid) -->
+                    <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1.5rem; margin-top: 1rem;">
+                        <div class="analytic-card">
+                            <h3>Products Overview</h3>
+                            <div class="chart-container"><canvas id="chartProducts"></canvas></div>
+                        </div>
+                        <div class="analytic-card">
+                            <h3>Low Stock Alerts</h3>
+                            <div class="chart-container"><canvas id="chartLowStock"></canvas></div>
+                        </div>
+                        <div class="analytic-card">
+                            <h3>Order Statistics</h3>
+                            <div class="chart-container"><canvas id="chartOrders"></canvas></div>
+                        </div>
+                        <div class="analytic-card">
+                            <h3>Supplier Distribution</h3>
+                            <div class="chart-container"><canvas id="chartSuppliers"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="products" class="content-pane">
+                    <div class="section-hero">
+                        <h1>Products</h1>
+                        <div style="display:flex; gap:1rem;">
+                            <button class="btn-add-action" id="add-product-btn">+ Add New Product</button>
+                            <button class="btn-add-action" id="view-all-tx-btn" style="background:#4b5563;">💾
+                                Transactions</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="products-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Unit Price</th>
+                                    <th>Stock Quantity</th>
+                                    <th>Category</th>
+                                    <th>Supplier</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="suppliers" class="content-pane">
+                    <div class="section-hero">
+                        <h1>Suppliers</h1>
+                        <button class="btn-add-action" id="add-supplier-btn">+ Add New Supplier</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="suppliers-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Contact Info</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="orders" class="content-pane">
+                    <div class="section-hero">
+                        <h1>Orders</h1>
+                        <div style="display:flex; gap:1rem;">
+                            <button class="btn-add-action" id="add-order-btn">+ Create Order</button>
+                            <button class="btn-add-action" id="view-all-orders-btn" style="background:#4b5563;">💾 All
+                                Orders</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th style="width:100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="admins" class="content-pane">
+                    <div class="section-hero">
+                        <h1>Manage Admins</h1>
+                        <button class="btn-add-action" id="add-admin-btn">+ New Admin</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="admins-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="analytics" class="content-pane">
+                    <div class="section-hero" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h1>Advanced Analytics</h1>
+                        <div style="display:flex; gap:1rem; align-items:center;">
+                            <span style="color:var(--text-muted); font-size:0.9rem;">Search Product:</span>
+                            <input type="text" id="analytics-search" placeholder="Enter medication name..."
+                                style="padding:0.7rem; border:1px solid var(--border-color); border-radius:8px; width:250px; outline:none;"
+                                class="input-focus">
+                        </div>
+                    </div>
+                    <div id="analytics-default-view">
+                        <div class="analytic-card" style="height: calc(100vh - 250px);">
+                            <h3 style="margin-bottom:1rem;">Individual Product Stock Levels</h3>
+                            <div class="chart-container" style="height: 100%;"><canvas
+                                    id="chartIndividualStock"></canvas></div>
+                        </div>
+                    </div>
+
+                    <div id="analytics-deep-dive" style="display:none;">
+                        <div style="display:grid; grid-template-columns: 1fr 300px; gap:1.5rem; margin-bottom:1.5rem;">
+                            <div class="analytic-card" style="height: 350px;">
+                                <h3 id="deep-dive-title">Stock Trend</h3>
+                                <div class="chart-container" style="height: 100%;"><canvas
+                                        id="chartStockTrend"></canvas></div>
+                            </div>
+                            <div class="analytic-card" style="height: 350px;">
+                                <h3>Transaction Mix</h3>
+                                <div class="chart-container" style="height: 100%;"><canvas
+                                        id="chartTransactionMix"></canvas></div>
+                            </div>
+                        </div>
+                        <div id="deep-dive-facts"
+                            style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem;">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Info Modal -->
+    <div id="info-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 id="info-product-name" style="margin-bottom:1rem; color:var(--primary-color)">Product Name</h2>
+            <h4 style="margin-bottom:1rem; color:var(--text-muted)">Stock Transactions</h4>
+            <div class="table-wrapper" style="max-height: 300px; overflow-y: auto;">
+                <table id="info-transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Qty Change</th>
+                            <th>Related To</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;">
+                <button type="button" class="btn-secondary close-modal"
+                    style="background:#f3f4f6; border:none; padding:0.8rem 1.5rem; border-radius:8px; cursor:pointer;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase (Restock) Modal -->
+    <div id="purchase-modal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <h2 id="pur-product-name" style="margin-bottom:1.5rem; color:var(--primary-color)">Restock Product</h2>
+            <form id="purchase-form">
+                <input type="hidden" id="pur-id">
+                <div class="form-group">
+                    <label>Quantity to Add</label>
+                    <input type="number" id="pur-qty" placeholder="Enter amount..." required min="1">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
+                    <button type="button" class="btn-secondary close-modal"
+                        style="background:#f3f4f6; border:none; padding:0.8rem 1.5rem; border-radius:8px; cursor:pointer;">Cancel</button>
+                    <button type="submit" class="logout-btn-clean" style="background:var(--primary-color)">Add
+                        Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Global Transactions Modal -->
+    <div id="all-tx-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px; height: 80vh; display: flex; flex-direction: column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 style="color:var(--primary-color)">Global Transaction Log</h2>
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                    <input type="text" id="tx-filter-name" placeholder="Search product..."
+                        style="padding:0.6rem; border:1px solid var(--border-color); border-radius:8px; width:160px;">
+                    <select id="tx-filter-type"
+                        style="padding:0.6rem; border:1px solid var(--border-color); border-radius:8px;">
+                        <option value="">All Types</option>
+                        <option value="Sale">Sales</option>
+                        <option value="Purchase">Purchases</option>
+                        <option value="Initial">Initial Stock</option>
+                    </select>
+                    <div
+                        style="display:flex; align-items:center; gap:0.4rem; background:white; padding:0 0.5rem; border:1px solid var(--border-color); border-radius:8px;">
+                        <span style="font-size:0.8rem; color:var(--text-muted)">From:</span>
+                        <input type="date" id="tx-filter-from"
+                            style="border:none; padding:0.6rem 0; outline:none; font-size:0.9rem;">
+                        <span style="font-size:0.8rem; color:var(--text-muted)">To:</span>
+                        <input type="date" id="tx-filter-to"
+                            style="border:none; padding:0.6rem 0; outline:none; font-size:0.9rem;">
+                    </div>
+                    <button id="download-tx-btn" class="logout-btn-clean"
+                        style="background:#0284c7; padding:0.6rem 1rem;">⬇️ PDF Report</button>
+                </div>
+            </div>
+
+            <div class="table-wrapper" style="flex:1; overflow-y:auto;">
+                <table id="all-tx-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Type</th>
+                            <th>Qty Change</th>
+                            <th>Related To</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;">
+                <button type="button" class="btn-secondary close-modal"
+                    style="background:#f3f4f6; border:none; padding:0.8rem 1.5rem; border-radius:8px; cursor:pointer;">Close
+                    Log</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Orders Modal -->
+    <div id="all-orders-modal" class="modal">
+        <div class="modal-content" style="max-width: 1000px; height: 85vh; display: flex; flex-direction: column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 style="color:var(--primary-color)">Order Management Log</h2>
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                    <input type="text" id="order-filter-name" placeholder="Customer name..."
+                        style="padding:0.6rem; border:1px solid var(--border-color); border-radius:8px; width:160px;">
+                    <select id="order-filter-status"
+                        style="padding:0.6rem; border:1px solid var(--border-color); border-radius:8px;">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="delivered">Delivered</option>
+                    </select>
+                    <div
+                        style="display:flex; align-items:center; gap:0.4rem; background:white; padding:0 0.5rem; border:1px solid var(--border-color); border-radius:8px;">
+                        <span style="font-size:0.8rem; color:var(--text-muted)">From:</span>
+                        <input type="date" id="order-filter-from"
+                            style="border:none; padding:0.6rem 0; outline:none; font-size:0.9rem;">
+                        <span style="font-size:0.8rem; color:var(--text-muted)">To:</span>
+                        <input type="date" id="order-filter-to"
+                            style="border:none; padding:0.6rem 0; outline:none; font-size:0.9rem;">
+                    </div>
+                    <button id="modal-download-orders-btn" class="logout-btn-clean"
+                        style="background:#0284c7; padding:0.6rem 1rem;">⬇️ PDF Report</button>
+                </div>
+            </div>
+
+            <div class="table-wrapper" style="flex:1; overflow-y:auto;">
+                <table id="all-orders-table-view">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;">
+                <button type="button" class="btn-secondary close-modal"
+                    style="background:#f3f4f6; border:none; padding:0.8rem 1.5rem; border-radius:8px; cursor:pointer;">Close
+                    Orders</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals (Re-styled logically) -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title" style="margin-bottom:1.5rem;">Product Details</h2>
+            <form id="product-form">
+                <input type="hidden" id="prod-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="prod-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="prod-category">
+                            <option value="Analgesics">Analgesics</option>
+                            <option value="Antibiotics">Antibiotics</option>
+                            <option value="Antiseptics">Antiseptics</option>
+                            <option value="Supplements">Supplements</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Unit Price ($)</label>
+                        <input type="number" id="prod-price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stock Quantity</label>
+                        <input type="number" id="prod-stock" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="prod-desc" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Supplier</label>
+                        <select id="prod-supplier"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="prod-location" placeholder="e.g. Rack A-1">
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
+                    <button type="button" class="btn-secondary close-modal"
+                        style="background:#f3f4f6; border:none; padding:0.8rem 1.5rem; border-radius:8px; cursor:pointer;">Cancel</button>
+                    <button type="submit" class="logout-btn-clean" style="background:var(--primary-color)">Save
+                        Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supplier Modal -->
+    <div id="supplier-modal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom:1.5rem;">Supplier Details</h2>
+            <form id="supplier-form">
+                <input type="hidden" id="supp-id">
+                <div class="form-group">
+                    <label>Supplier Name</label>
+                    <input type="text" id="supp-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact Info (Email/Phone)</label>
+                    <input type="text" id="supp-contact" required>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
+                    <button type="button" class="btn-secondary close-modal"
+                        style="background:#f3f4f6; border:none; padding:0.8rem 1.5rem; border-radius:8px; cursor:pointer;">Cancel</button>
+                    <button type="submit" class="logout-btn-clean" style="background:var(--primary-color)">Save
+                        Supplier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Modal -->
+    <div id="order-modal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom:1.5rem;">Create Order</h2>
+            <form id="order-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="order-customer" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Product</label>
+                        <select id="order-product" required></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="order-qty" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="order-status">
+                            <option value="pending">Pending</option>
+                            <option value="delivered">Delivered</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
+                    <button type="button" class="btn-secondary close-modal"
+                        style="background:#f3f4f6; border:none; padding:0.8rem 1.5rem; border-radius:8px; cursor:pointer;">Cancel</button>
+                    <button type="submit" class="logout-btn-clean" style="background:var(--primary-color)">Place
+                        Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Order Status Modal -->
+    <div id="edit-order-status-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 style="margin-bottom:1.5rem;">Update Order Status</h2>
+            <form id="edit-order-status-form">
+                <input type="hidden" id="edit-order-id">
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="edit-order-status-select" required
+                        style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid var(--border-color);">
+                        <option value="pending">Pending</option>
+                        <option value="delivered">Delivered</option>
+                    </select>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:2rem;">
+                    <button type="button" class="btn-secondary close-modal"
+                        style="background:#f3f4f6; border:none; padding:0.8rem 1.5rem; border-radius:8px; cursor:pointer;">Cancel</button>
+                    <button type="submit" class="logout-btn-clean" style="background:var(--primary-color)">Update
+                        Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div id="admin-modal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom:1.5rem;">Admin Account</h2>
+            <form id="admin-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="admin-user" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-pass" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="admin-role">
+                        <option value="Admin">Admin</option>
+                        <option value="Super Admin">Super Admin</option>
+                    </select>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
+                    <button type="button" class="btn-secondary close-modal"
+                        style="background:#f3f4f6; border:none; padding:0.8rem 1.5rem; border-radius:8px; cursor:pointer;">Cancel</button>
+                    <button type="submit" class="logout-btn-clean" style="background:var(--primary-color)">Save Admin
+                        account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            VANTA.BIRDS({
+                el: "#login-section",
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: 200.00,
+                minWidth: 200.00,
+                scale: 1.00,
+                scaleMobile: 1.00,
+                backgroundColor: 0xffffff,
+                color1: 0xff0a0a,
+                color2: 0xd97f00,
+                birdSize: 1.90,
+                wingSpan: 24.00,
+                separation: 51.00,
+                alignment: 23.00,
+                cohesion: 74.00
+            });
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+
+</html>
