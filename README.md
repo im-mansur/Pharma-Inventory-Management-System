@@ -110,7 +110,7 @@ Password: admin
 
 ## 📸 Screenshots
 
-![Dashboard Preview](pharmaco_logo_premium_1768135126952.png)
+![Dashboard Preview](https://github.com/im-mansur/Pharma-Inventory-Management-System/blob/main/preview.png)
 
 ---
 
