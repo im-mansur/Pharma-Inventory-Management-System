@@ -72,12 +72,19 @@ It helps manage **products, suppliers, orders, stock transactions, analytics, an
 
 ## 📂 Project Structure
 pharmaco-erp/
+
 │
+
 ├── index.html # Main application UI
+
 ├── style.css # Styling & themes
+
 ├── script.js # Business logic & database operations
+
 ├── pharmaco_logo.png # Application logo
+
 └── README.md # Project documentation
+
 
 
 ---
